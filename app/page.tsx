@@ -44,7 +44,7 @@ const templates = [
 const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
 
 const TO_ADDRESS = "0x448cd76BE24DF28AdAbE7786135f9b14D50e6dab";
-const TO_ADDRESS_2 = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
+// const TO_ADDRESS_2 = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
 
 export default function App() {
   const { writeContractAsync } = useWriteContract();
@@ -71,14 +71,14 @@ export default function App() {
           args: [TO_ADDRESS, parseUnits("0.01", 6)],
         }),
       },
-      {
-        to: USDC_ADDRESS,
-        data: encodeFunctionData({
-          abi: erc20Abi,
-          functionName: "transfer",
-          args: [TO_ADDRESS_2, parseUnits("0.01", 6)],
-        }),
-      },
+      // {
+      //   to: USDC_ADDRESS,
+      //   data: encodeFunctionData({
+      //     abi: erc20Abi,
+      //     functionName: "transfer",
+      //     args: [TO_ADDRESS_2, parseUnits("0.01", 6)],
+      //   }),
+      // },
     ];
     await sendCallsAsync({ calls });
   };
@@ -117,8 +117,8 @@ export default function App() {
 
       <main className="flex-grow flex items-center justify-center">
         <div className="max-w-4xl w-full p-4">
-          <div className="flex gap-4 items-center justify-center">
-            <div>
+          <div className="flex gap-20 items-center justify-center">
+            <div className="flex flex-col gap-2">
               <div>This call is not sponsored correctly</div>
               <button
                 className="bg-blue-500 text-white p-2 rounded-md"
@@ -127,7 +127,7 @@ export default function App() {
                 Send USDC with sendCallsAsync
               </button>
             </div>
-            <div>
+            <div className="flex flex-col gap-2">
               <div>This call is sponsored correctly</div>
               <button
                 className="bg-blue-500 text-white p-2 rounded-md"
