@@ -80,7 +80,14 @@ export default function App() {
         }),
       },
     ];
-    await sendCallsAsync({ calls });
+    await sendCallsAsync({
+      calls,
+      capabilities: {
+        paymasterService: {
+          url: process.env.NEXT_PUBLIC_PAYMASTER_AND_BUNDLER_ENDPOINT,
+        },
+      },
+    });
   };
 
   return (
