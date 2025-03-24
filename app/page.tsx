@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   ConnectWallet,
@@ -6,36 +6,83 @@ import {
   WalletDropdown,
   WalletDropdownLink,
   WalletDropdownDisconnect,
-} from '@coinbase/onchainkit/wallet';
+} from "@coinbase/onchainkit/wallet";
 import {
   Address,
   Avatar,
   Name,
   Identity,
   EthBalance,
-} from '@coinbase/onchainkit/identity';
-import ArrowSvg from './svg/ArrowSvg';
-import ImageSvg from './svg/Image';
-import OnchainkitSvg from './svg/OnchainKit';
+} from "@coinbase/onchainkit/identity";
+import ArrowSvg from "./svg/ArrowSvg";
+import ImageSvg from "./svg/Image";
+import OnchainkitSvg from "./svg/OnchainKit";
+import { useSendCalls } from "wagmi/experimental";
+import { useWriteContract } from "wagmi";
+import { encodeFunctionData, erc20Abi, parseUnits } from "viem";
 
 const components = [
   {
-    name: 'Transaction',
-    url: 'https://onchainkit.xyz/transaction/transaction',
+    name: "Transaction",
+    url: "https://onchainkit.xyz/transaction/transaction",
   },
-  { name: 'Swap', url: 'https://onchainkit.xyz/swap/swap' },
-  { name: 'Checkout', url: 'https://onchainkit.xyz/checkout/checkout' },
-  { name: 'Wallet', url: 'https://onchainkit.xyz/wallet/wallet' },
-  { name: 'Identity', url: 'https://onchainkit.xyz/identity/identity' },
+  { name: "Swap", url: "https://onchainkit.xyz/swap/swap" },
+  { name: "Checkout", url: "https://onchainkit.xyz/checkout/checkout" },
+  { name: "Wallet", url: "https://onchainkit.xyz/wallet/wallet" },
+  { name: "Identity", url: "https://onchainkit.xyz/identity/identity" },
 ];
 
 const templates = [
-  { name: 'NFT', url: 'https://github.com/coinbase/onchain-app-template' },
-  { name: 'Commerce', url: 'https://github.com/coinbase/onchain-commerce-template'},
-  { name: 'Fund', url: 'https://github.com/fakepixels/fund-component' },
+  { name: "NFT", url: "https://github.com/coinbase/onchain-app-template" },
+  {
+    name: "Commerce",
+    url: "https://github.com/coinbase/onchain-commerce-template",
+  },
+  { name: "Fund", url: "https://github.com/fakepixels/fund-component" },
 ];
 
+const USDC_ADDRESS = "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913";
+
+const TO_ADDRESS = "0x448cd76BE24DF28AdAbE7786135f9b14D50e6dab";
+const TO_ADDRESS_2 = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
+
 export default function App() {
+  const { writeContractAsync } = useWriteContract();
+  const { sendCallsAsync } = useSendCalls();
+
+  // this call is sponsored correctly
+  const handleSendUsdcClick = async () => {
+    await writeContractAsync({
+      address: USDC_ADDRESS,
+      abi: erc20Abi,
+      functionName: "transfer",
+      args: [TO_ADDRESS, parseUnits("0.01", 6)],
+    });
+  };
+
+  // this call is not sponsored correctly
+  const handleSendUsdcWithSendCallsClick = async () => {
+    const calls = [
+      {
+        to: USDC_ADDRESS,
+        data: encodeFunctionData({
+          abi: erc20Abi,
+          functionName: "transfer",
+          args: [TO_ADDRESS, parseUnits("0.01", 6)],
+        }),
+      },
+      {
+        to: USDC_ADDRESS,
+        data: encodeFunctionData({
+          abi: erc20Abi,
+          functionName: "transfer",
+          args: [TO_ADDRESS_2, parseUnits("0.01", 6)],
+        }),
+      },
+    ];
+    await sendCallsAsync({ calls });
+  };
+
   return (
     <div className="flex flex-col min-h-screen font-sans dark:bg-background dark:text-white bg-white text-black">
       <header className="pt-4 pr-4">
@@ -70,7 +117,27 @@ export default function App() {
 
       <main className="flex-grow flex items-center justify-center">
         <div className="max-w-4xl w-full p-4">
-          <div className="w-1/3 mx-auto mb-6">
+          <div className="flex gap-4 items-center justify-center">
+            <div>
+              <div>This call is not sponsored correctly</div>
+              <button
+                className="bg-blue-500 text-white p-2 rounded-md"
+                onClick={handleSendUsdcWithSendCallsClick}
+              >
+                Send USDC with sendCallsAsync
+              </button>
+            </div>
+            <div>
+              <div>This call is sponsored correctly</div>
+              <button
+                className="bg-blue-500 text-white p-2 rounded-md"
+                onClick={handleSendUsdcClick}
+              >
+                Send USDC with write contract
+              </button>
+            </div>
+          </div>
+          <div className="w-1/3 mx-auto mb-6 mt-20">
             <ImageSvg />
           </div>
           <div className="flex justify-center mb-6">
@@ -80,7 +147,10 @@ export default function App() {
           </div>
           <p className="text-center mb-6">
             Get started by editing
-            <code className="p-1 ml-1 rounded dark:bg-gray-800 bg-gray-200">app/page.tsx</code>.
+            <code className="p-1 ml-1 rounded dark:bg-gray-800 bg-gray-200">
+              app/page.tsx
+            </code>
+            .
           </p>
           <div className="flex flex-col items-center">
             <div className="max-w-2xl w-full">
@@ -119,7 +189,7 @@ export default function App() {
                           rel="noopener noreferrer"
                         >
                           {template.name}
-                          <ArrowSvg/>
+                          <ArrowSvg />
                         </a>
                       </li>
                     ))}
