@@ -56,7 +56,7 @@ export default function App() {
       address: USDC_ADDRESS,
       abi: erc20Abi,
       functionName: "transfer",
-      args: [TO_ADDRESS, parseUnits("0.01", 6)],
+      args: [TO_ADDRESS, parseUnits("0.0001", 6)],
     });
   };
 
@@ -67,18 +67,18 @@ export default function App() {
         to: USDC_ADDRESS,
         data: encodeFunctionData({
           abi: erc20Abi,
-          functionName: "transfer",
-          args: [TO_ADDRESS, parseUnits("0.01", 6)],
+          functionName: "approve",
+          args: [TO_ADDRESS, parseUnits("0.0001", 6)],
         }),
       },
-      // {
-      //   to: USDC_ADDRESS,
-      //   data: encodeFunctionData({
-      //     abi: erc20Abi,
-      //     functionName: "transfer",
-      //     args: [TO_ADDRESS_2, parseUnits("0.01", 6)],
-      //   }),
-      // },
+      {
+        to: USDC_ADDRESS,
+        data: encodeFunctionData({
+          abi: erc20Abi,
+          functionName: "transfer",
+          args: [TO_ADDRESS, parseUnits("0.0001", 6)],
+        }),
+      },
     ];
     await sendCallsAsync({ calls });
   };
